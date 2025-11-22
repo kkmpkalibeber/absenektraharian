@@ -1,0 +1,3090 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Manajemen Ekstrakurikuler</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: calc(100vh - 40px);
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #64748b;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-item:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .content-area {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            margin: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.875rem;
+            margin: 0 2px;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+
+        .btn-save {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .edit-select {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            background: white;
+        }
+
+        .confirm-delete {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        .confirm-delete p {
+            margin: 0 0 10px 0;
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e5e7eb;
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+            color: #374151;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.connected {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .connection-status.disconnected {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .connection-status.connecting {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fed7aa;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin: 0 15px;
+        }
+
+        /* DEBUG STYLES */
+        .debug-panel {
+            background: #1f2937;
+            color: #f9fafb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .debug-panel h4 {
+            color: #60a5fa;
+            margin: 0 0 10px 0;
+        }
+
+        .debug-success {
+            color: #34d399;
+        }
+
+        .debug-error {
+            color: #f87171;
+        }
+
+        .debug-warning {
+            color: #fbbf24;
+        }
+
+        .debug-info {
+            color: #93c5fd;
+        }
+
+        /* Progress Notification Styles */
+        .progress-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .progress-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar-container {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin: 15px 0;
+        }
+
+        .progress-message {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin: 15px 0;
+        }
+
+        .progress-tips {
+            background: #fef3c7;
+            border: 1px solid #fed7aa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+
+        .progress-timer {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .data-table {
+                font-size: 0.8rem;
+                min-width: 600px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 6px;
+                white-space: nowrap;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="connection-status" id="connectionStatus">
+   🔄 Menghubungkan...
+  </div><!-- Progress Modal -->
+  <div id="progressModal" class="progress-modal" style="display: none;">
+   <div class="progress-content">
+    <div class="progress-title" id="progressTitle">
+     💾 Menyimpan Data Absensi
+    </div>
+    <div class="progress-percentage" id="progressPercentage">
+     0%
+    </div>
+    <div class="progress-bar-container">
+     <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+    </div>
+    <div class="progress-message" id="progressMessage">
+     Menyiapkan data...
+    </div>
+    <div class="progress-tips"><strong>💡 Tips:</strong><br>
+      • Harap tunggu hingga proses selesai<br>
+      • Jangan refresh atau tutup halaman<br>
+      • Proses ini memakan waktu 2-5 menit untuk 49 siswa
+    </div>
+    <div class="progress-timer" id="progressTimer">
+     Waktu berlalu: 0 detik
+    </div>
+   </div>
+  </div>
+  <div class="container">
+   <header class="header">
+    <h1 id="appTitle">Sistem Manajemen Ekstrakurikuler</h1>
+    <p id="appSubtitle">Platform terpadu untuk mengelola data anggota, absensi, dan penilaian ekstrakurikuler</p>
+   </header>
+   <div class="main-layout"><!-- Sidebar Navigation -->
+    <div class="sidebar">
+     <nav class="nav-menu"><button class="nav-item active" onclick="showSection('dashboard')"> 📊 Dashboard </button> <button class="nav-item" onclick="showSection('anggota')"> 👥 Anggota </button> <button class="nav-item" onclick="showSection('absensi')"> 📋 Absensi </button> <button class="nav-item" onclick="showSection('penilaian')"> 📝 Penilaian Akhir </button> <button class="nav-item" onclick="showSection('laporan')"> 📈 Laporan </button> <button class="nav-item" onclick="showSection('debug')"> 🔧 Debug </button>
+     </nav>
+    </div><!-- Content Area -->
+    <div class="content-area"><!-- Dashboard Section -->
+     <section id="dashboard" class="content-section active">
+      <h2>📊 Dashboard Statistik</h2>
+      <div class="stats-grid" id="statsGrid">
+       <div class="stat-card">
+        <h3 id="totalAnggota">0</h3>
+        <p>Total Anggota</p>
+       </div>
+       <div class="stat-card">
+        <h3 id="totalEkstra">0</h3>
+        <p>Total Ekstrakurikuler</p>
+       </div>
+       <div class="stat-card">
+        <h3 id="totalHadir">0</h3>
+        <p>Total Kehadiran</p>
+       </div>
+       <div class="stat-card">
+        <h3 id="totalSakit">0</h3>
+        <p>Total Sakit</p>
+       </div>
+       <div class="stat-card">
+        <h3 id="totalIzin">0</h3>
+        <p>Total Izin</p>
+       </div>
+       <div class="stat-card">
+        <h3 id="totalAlpha">0</h3>
+        <p>Total Alpha</p>
+       </div>
+      </div>
+      <div class="alert alert-success" id="connectionSuccess" style="display: none;"><strong>✅ Koneksi Berhasil!</strong><br>
+        Sistem berhasil terhubung ke Google Apps Script. Semua fitur sudah dapat digunakan. 
+       <div style="margin-top: 15px;"><button class="btn btn-primary" onclick="loadAllData()" style="margin-right: 10px;"> 🔄 Refresh Data </button> <button class="btn btn-success" onclick="showSection('anggota')"> 👥 Mulai Input Data </button>
+       </div>
+      </div>
+      <div class="alert alert-error" id="connectionAlert"><strong>🔄 Menghubungkan ke Google Apps Script...</strong> <br><br>
+       <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin: 15px 0;"><strong>📡 Status Koneksi:</strong><br>
+         • URL Apps Script: <code style="font-size: 0.85rem;">...J9yWng/exec</code><br>
+         • Sedang melakukan test koneksi...<br>
+         • Memuat data dari Google Sheets...
+       </div>
+       <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 15px 0;"><strong>⏳ Tunggu sebentar...</strong><br>
+         Sistem sedang menghubungkan ke Google Apps Script dan memuat data. Proses ini biasanya memakan waktu 5-10 detik.
+       </div>
+       <div style="margin-top: 15px;"><button class="btn btn-primary" onclick="testConnection()" style="margin-right: 10px;"> 🔍 Test Koneksi Manual </button> <button class="btn btn-success" onclick="loadAllData()"> 🔄 Coba Lagi </button>
+       </div>
+      </div>
+     </section><!-- Debug Section -->
+     <section id="debug" class="content-section">
+      <h2>🔧 Debug Panel</h2>
+      <div class="form-container">
+       <h3>🔍 Debug Tools</h3>
+       <div style="display: flex; gap: 10px; flex-wrap: wrap;"><button class="btn btn-primary" onclick="debugConnection()"> 🔗 Test Koneksi </button> <button class="btn btn-primary" onclick="debugSheetStructure()"> 📋 Cek Struktur Sheet </button> <button class="btn btn-primary" onclick="debugCurrentData()"> 📊 Cek Data Lokal </button> <button class="btn btn-primary" onclick="debugDeleteFunction()"> 🗑️ Test Delete Function </button> <button class="btn btn-cancel" onclick="clearDebugLog()"> 🧹 Clear Log </button>
+       </div>
+      </div>
+      <div class="debug-panel" id="debugLog">
+       <h4>🔍 Debug Log</h4>
+       <div id="debugContent">
+        Klik tombol debug di atas untuk memulai debugging...
+       </div>
+      </div>
+     </section><!-- Anggota Section -->
+     <section id="anggota" class="content-section">
+      <h2>👥 Manajemen Anggota</h2>
+      <div class="form-container">
+       <h3>Tambah Anggota Baru</h3>
+       <form id="anggotaForm">
+        <div class="form-grid">
+         <div class="form-group"><label for="anggotaNama">Nama Lengkap</label> <input type="text" id="anggotaNama" name="nama" required>
+         </div>
+         <div class="form-group"><label for="anggotaKelas">Kelas</label> <select id="anggotaKelas" name="kelas" required> <option value="">Pilih Kelas</option> </select> <input type="text" id="anggotaKelasCustom" name="kelasCustom" placeholder="Atau tulis kelas baru..." style="margin-top: 8px; display: none;">
+         </div>
+         <div class="form-group"><label for="anggotaEkstra">Ekstrakurikuler</label> <select id="anggotaEkstra" name="ekstra" required> <option value="">Pilih Ekstrakurikuler</option> </select> <input type="text" id="anggotaEkstraCustom" name="ekstraCustom" placeholder="Atau tulis ekstrakurikuler baru..." style="margin-top: 8px; display: none;">
+         </div>
+        </div><button type="submit" class="btn btn-primary"> ➕ Tambah Anggota </button>
+       </form>
+      </div><!-- Search Section -->
+      <div class="form-container">
+       <h3>🔍 Pencarian Anggota</h3>
+       <div class="form-grid" style="grid-template-columns: 1fr auto;">
+        <div class="form-group"><label for="searchAnggota">Cari berdasarkan Nama, Kelas, atau Ekstrakurikuler</label> <input type="text" id="searchAnggota" placeholder="Ketik nama, kelas, atau ekstrakurikuler..." oninput="filterAnggota()">
+        </div>
+        <div class="form-group" style="display: flex; align-items: end;"><button type="button" class="btn btn-cancel" onclick="clearFilters()"> 🗑️ Reset </button>
+        </div>
+       </div>
+       <div id="searchResults" style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 0.9rem; color: #6b7280; display: none;">
+        Menampilkan <span id="filteredCount">0</span> dari <span id="totalCount">0</span> anggota
+       </div>
+      </div>
+      <div id="anggotaList">
+       <div class="loading">
+        Memuat data anggota...
+       </div>
+      </div>
+     </section><!-- Absensi Section -->
+     <section id="absensi" class="content-section">
+      <h2>📋 Manajemen Absensi</h2>
+      <div class="form-container">
+       <h3>Catat Absensi</h3>
+       <div class="form-grid" style="grid-template-columns: 1fr 1fr auto;">
+        <div class="form-group"><label for="absensiTanggal">Tanggal</label> <input type="date" id="absensiTanggal" name="tanggal" required>
+        </div>
+        <div class="form-group"><label for="absensiEkstra">Ekstrakurikuler</label> <select id="absensiEkstra" name="ekstra" required onchange="loadAnggotaForAbsensi()"> <option value="">Pilih Ekstrakurikuler</option> </select>
+        </div>
+        <div class="form-group" style="display: flex; align-items: end;"><button type="button" class="btn btn-primary" onclick="loadAnggotaForAbsensi()" id="loadAnggotaBtn" disabled> 📋 Muat Daftar Siswa </button>
+        </div>
+       </div><!-- Daftar Siswa untuk Absensi -->
+       <div id="absensiAnggotaContainer" style="display: none; margin-top: 20px;">
+        <h4>Daftar Siswa - <span id="selectedEkstraName"></span></h4>
+        <p style="color: #6b7280; margin-bottom: 15px;">Tanggal: <span id="selectedTanggal"></span></p>
+        <div id="absensiAnggotaList"><!-- Daftar siswa akan dimuat di sini -->
+        </div>
+        <div style="margin-top: 20px; text-align: center;"><button type="button" class="btn btn-success" onclick="simpanSemuaAbsensi()" id="simpanAbsensiBtn"> 💾 Simpan Semua Absensi </button> <button type="button" class="btn btn-cancel" onclick="batalAbsensi()" style="margin-left: 10px;"> ❌ Batal </button>
+        </div>
+       </div>
+      </div><!-- Search Section for Absensi -->
+      <div class="form-container">
+       <h3>🔍 Pencarian Data Absensi</h3>
+       <div class="form-grid" style="grid-template-columns: 1fr auto;">
+        <div class="form-group"><label for="searchAbsensi">Cari berdasarkan Nama, Ekstrakurikuler, atau Tanggal</label> <input type="text" id="searchAbsensi" placeholder="Ketik nama siswa, ekstrakurikuler, atau tanggal..." oninput="filterAbsensiData()">
+        </div>
+        <div class="form-group" style="display: flex; align-items: end;"><button type="button" class="btn btn-cancel" onclick="clearAbsensiFilters()"> 🗑️ Reset </button>
+        </div>
+       </div>
+       <div id="searchAbsensiResults" style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 0.9rem; color: #6b7280; display: none;">
+        Menampilkan <span id="filteredAbsensiCount">0</span> dari <span id="totalAbsensiCount">0</span> data absensi
+       </div>
+      </div>
+      <div id="absensiList">
+       <div class="loading">
+        Memuat data absensi...
+       </div>
+      </div>
+     </section><!-- Penilaian Section -->
+     <section id="penilaian" class="content-section">
+      <h2>📝 Penilaian Akhir</h2>
+      <div class="form-container">
+       <h3>Input Penilaian</h3>
+       <form id="penilaianForm">
+        <div class="form-grid">
+         <div class="form-group"><label for="penilaianEkstra">Ekstrakurikuler</label> <input type="text" id="penilaianEkstra" name="ekstra" required>
+         </div>
+         <div class="form-group"><label for="penilaianNama">Nama Siswa</label> <input type="text" id="penilaianNama" name="nama" required>
+         </div>
+         <div class="form-group"><label for="penilaianKelas">Kelas</label> <input type="text" id="penilaianKelas" name="kelas" required>
+         </div>
+         <div class="form-group"><label for="penilaianNilai">Nilai</label> <select id="penilaianNilai" name="nilai" required> <option value="SANGAT BAIK">SANGAT BAIK</option> <option value="BAIK" selected>BAIK</option> <option value="SEDANG">SEDANG</option> <option value="KURANG">KURANG</option> </select>
+         </div>
+         <div class="form-group" style="grid-column: span 2;"><label for="penilaianKeterangan">Keterangan</label> <textarea id="penilaianKeterangan" name="keterangan" placeholder="Masukkan deskripsi penilaian (opsional)" rows="3"></textarea>
+         </div>
+        </div><button type="submit" class="btn btn-primary"> 💾 Simpan Penilaian </button>
+       </form>
+      </div>
+      <div id="penilaianList">
+       <div class="loading">
+        Memuat data penilaian...
+       </div>
+      </div>
+     </section><!-- Laporan Section -->
+     <section id="laporan" class="content-section">
+      <h2>📈 Laporan</h2>
+      <div class="alert alert-info"><strong>Laporan Kehadiran</strong> Lihat ringkasan data absensi dan penilaian berdasarkan ekstrakurikuler dan kelas.
+      </div>
+      <div id="laporanContent">
+       <div class="loading">
+        Memuat laporan...
+       </div>
+      </div>
+     </section>
+    </div>
+   </div>
+  </div>
+  <script>
+        // Configuration - Web App URL (URL BARU)
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNf1KLtywoN4vQjsWgJIuJz2HIf4Xm4jISdQph7G6ty7BZP0_3_NZtHP74GTkSJ9yWng/exec';
+        const ANGGOTA_SHEET = 'Sheet1';    // Sheet untuk data anggota (nama, kelas, ekstra)
+        const ABSENSI_SHEET = 'Sheet2';    // Sheet untuk data absensi (tanggal, ekstra, kelas, nama, status)
+        const PENILAIAN_SHEET = 'Sheet3';  // Sheet untuk data penilaian (ekstra, nama, kelas, nilai, keterangan)
+
+        // DEBUG MODE - Set to true for detailed logging
+        const DEBUG_MODE = true;
+
+        // Global variables
+        let currentData = {
+            anggota: [],
+            absensi: [],
+            penilaian: []
+        };
+        
+        // Pagination variables
+        let currentPage = 1;
+        let currentAbsensiPage = 1;
+        const itemsPerPage = 30;
+        
+        // Filter variables
+        let filteredAnggota = [];
+        let filteredAbsensi = [];
+        let isFiltered = false;
+        let isAbsensiFiltered = false;
+
+        // Progress tracking variables
+        let progressStartTime = null;
+        let progressTimer = null;
+
+        // Debug logging function
+        function debugLog(message, type = 'info') {
+            if (!DEBUG_MODE) return;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const debugContent = document.getElementById('debugContent');
+            
+            if (debugContent) {
+                const logClass = `debug-${type}`;
+                debugContent.innerHTML += `<div class="${logClass}">[${timestamp}] ${message}</div>`;
+                debugContent.scrollTop = debugContent.scrollHeight;
+            }
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        // Clear debug log
+        function clearDebugLog() {
+            const debugContent = document.getElementById('debugContent');
+            if (debugContent) {
+                debugContent.innerHTML = 'Debug log cleared...';
+            }
+        }
+
+        // Progress Modal Functions
+        function showProgressModal(title = '💾 Menyimpan Data') {
+            progressStartTime = Date.now();
+            const modal = document.getElementById('progressModal');
+            const titleEl = document.getElementById('progressTitle');
+            const percentageEl = document.getElementById('progressPercentage');
+            const barEl = document.getElementById('progressBar');
+            const messageEl = document.getElementById('progressMessage');
+            const timerEl = document.getElementById('progressTimer');
+            
+            titleEl.textContent = title;
+            percentageEl.textContent = '0%';
+            barEl.style.width = '0%';
+            messageEl.textContent = 'Menyiapkan data...';
+            timerEl.textContent = 'Waktu berlalu: 0 detik';
+            
+            modal.style.display = 'flex';
+            
+            // Start timer
+            progressTimer = setInterval(() => {
+                if (progressStartTime) {
+                    const elapsed = Math.floor((Date.now() - progressStartTime) / 1000);
+                    timerEl.textContent = `Waktu berlalu: ${elapsed} detik`;
+                }
+            }, 1000);
+            
+            debugLog('📊 Progress modal shown', 'info');
+        }
+
+        function updateProgress(percentage, message) {
+            const percentageEl = document.getElementById('progressPercentage');
+            const barEl = document.getElementById('progressBar');
+            const messageEl = document.getElementById('progressMessage');
+            
+            percentageEl.textContent = `${percentage}%`;
+            barEl.style.width = `${percentage}%`;
+            messageEl.textContent = message;
+            
+            debugLog(`📊 Progress updated: ${percentage}% - ${message}`, 'info');
+        }
+
+        function hideProgressModal() {
+            const modal = document.getElementById('progressModal');
+            modal.style.display = 'none';
+            
+            if (progressTimer) {
+                clearInterval(progressTimer);
+                progressTimer = null;
+            }
+            
+            if (progressStartTime) {
+                const totalTime = Math.floor((Date.now() - progressStartTime) / 1000);
+                debugLog(`📊 Progress completed in ${totalTime} seconds`, 'success');
+                progressStartTime = null;
+            }
+        }
+
+        // Debug functions
+        async function debugConnection() {
+            debugLog('🔗 Testing connection to Google Apps Script...', 'info');
+            debugLog(`URL: ${APPS_SCRIPT_URL}`, 'info');
+            
+            try {
+                const result = await makeJSONPRequest('test');
+                debugLog(`✅ Connection test result: ${JSON.stringify(result)}`, 'success');
+                
+                if (result && result.success) {
+                    debugLog(`✅ Server message: ${result.message}`, 'success');
+                    debugLog(`📊 Spreadsheet ID: ${result.spreadsheetId}`, 'info');
+                    debugLog(`📋 Available sheets: ${result.availableSheets?.join(', ')}`, 'info');
+                } else {
+                    debugLog(`❌ Connection failed: ${result?.error || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                debugLog(`❌ Connection error: ${error.message}`, 'error');
+            }
+        }
+
+        async function debugSheetStructure() {
+            debugLog('📋 Checking sheet structure...', 'info');
+            
+            try {
+                const result = await makeJSONPRequest('debugSheetStructure');
+                debugLog(`📊 Sheet structure: ${JSON.stringify(result, null, 2)}`, 'info');
+            } catch (error) {
+                debugLog(`❌ Failed to get sheet structure: ${error.message}`, 'error');
+            }
+        }
+
+        function debugCurrentData() {
+            debugLog('📊 Current local data:', 'info');
+            debugLog(`👥 Anggota: ${currentData.anggota.length} records`, 'info');
+            debugLog(`📋 Absensi: ${currentData.absensi.length} records`, 'info');
+            debugLog(`📝 Penilaian: ${currentData.penilaian.length} records`, 'info');
+            
+            if (currentData.anggota.length > 0) {
+                debugLog(`Sample anggota: ${JSON.stringify(currentData.anggota[0])}`, 'info');
+            }
+        }
+
+        async function debugDeleteFunction() {
+            debugLog('🗑️ Testing delete function...', 'info');
+            
+            if (currentData.anggota.length === 0) {
+                debugLog('❌ No anggota data to test delete', 'warning');
+                return;
+            }
+            
+            const testAnggota = currentData.anggota[0];
+            debugLog(`🎯 Test target: ${JSON.stringify(testAnggota)}`, 'info');
+            
+            try {
+                // Test delete request (without actually deleting)
+                debugLog('📤 Sending test delete request...', 'info');
+                
+                const params = {
+                    nama: testAnggota.nama,
+                    kelas: testAnggota.kelas,
+                    ekstra: testAnggota.ekstra
+                };
+                
+                debugLog(`📋 Delete parameters: ${JSON.stringify(params)}`, 'info');
+                
+                // Note: This is just a test, we won't actually delete
+                debugLog('⚠️ This is a test - no actual deletion performed', 'warning');
+                
+            } catch (error) {
+                debugLog(`❌ Delete test error: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('🚀 Application starting...', 'info');
+            updateConnectionStatus('connecting');
+            loadAllData();
+            
+            // Set today's date for absensi form
+            document.getElementById('absensiTanggal').value = new Date().toISOString().split('T')[0];
+            
+            // Setup form handlers
+            setupFormHandlers();
+            setupDropdownHandlers();
+            
+            debugLog('✅ Application initialized', 'success');
+        });
+
+        // Connection status
+        function updateConnectionStatus(status) {
+            const statusEl = document.getElementById('connectionStatus');
+            const alertEl = document.getElementById('connectionAlert');
+            const successEl = document.getElementById('connectionSuccess');
+            
+            statusEl.className = `connection-status ${status}`;
+            
+            switch(status) {
+                case 'connecting':
+                    statusEl.textContent = '🔄 Menghubungkan...';
+                    alertEl.style.display = 'block';
+                    successEl.style.display = 'none';
+                    debugLog('🔄 Connection status: connecting', 'info');
+                    break;
+                case 'connected':
+                    statusEl.textContent = '✅ Terhubung';
+                    alertEl.style.display = 'none';
+                    successEl.style.display = 'block';
+                    debugLog('✅ Connection status: connected', 'success');
+                    break;
+                case 'disconnected':
+                    statusEl.textContent = '❌ Terputus';
+                    alertEl.style.display = 'block';
+                    successEl.style.display = 'none';
+                    debugLog('❌ Connection status: disconnected', 'error');
+                    break;
+            }
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+            
+            debugLog(`📄 Switched to section: ${sectionId}`, 'info');
+        }
+
+        // Load all data from Google Sheets dengan JSONP untuk mengatasi CORS
+        async function loadAllData() {
+            const maxRetries = 3;
+            let retryCount = 0;
+            
+            debugLog('📥 Starting data load...', 'info');
+            
+            while (retryCount < maxRetries) {
+                try {
+                    updateConnectionStatus('connecting');
+                    showAlert('info', `🔄 Mencoba koneksi ke Google Sheets... ${retryCount > 0 ? `(Percobaan ${retryCount + 1}/${maxRetries})` : ''}`);
+                    
+                    debugLog(`🔄 Load attempt ${retryCount + 1}/${maxRetries}`, 'info');
+                    
+                    // Test connection dengan JSONP
+                    debugLog('🔗 Testing JSONP connection...', 'info');
+                    const testResult = await makeJSONPRequest('test');
+                    debugLog(`🔗 Test result: ${JSON.stringify(testResult)}`, 'info');
+                    
+                    if (!testResult || !testResult.success) {
+                        throw new Error(testResult?.error || 'Connection test failed');
+                    }
+                    
+                    // Load data from all sheets menggunakan JSONP
+                    debugLog('📊 Loading data from sheets...', 'info');
+                    const [anggotaData, absensiData, penilaianData] = await Promise.all([
+                        makeJSONPRequest('getAnggota'),
+                        makeJSONPRequest('getAbsensi'),
+                        makeJSONPRequest('getPenilaian')
+                    ]);
+                    
+                    debugLog(`📊 Data loaded - Anggota: ${anggotaData?.data?.length || 0}, Absensi: ${absensiData?.data?.length || 0}, Penilaian: ${penilaianData?.data?.length || 0}`, 'success');
+                    
+                    currentData.anggota = anggotaData?.data || [];
+                    currentData.absensi = absensiData?.data || [];
+                    currentData.penilaian = penilaianData?.data || [];
+                    
+                    updateConnectionStatus('connected');
+                    showAlert('success', `✅ Data berhasil dimuat! Anggota: ${currentData.anggota.length}, Absensi: ${currentData.absensi.length}, Penilaian: ${currentData.penilaian.length}`);
+                    
+                    // Update all displays
+                    updateDashboardStats();
+                    populateDropdowns();
+                    renderAnggotaList();
+                    renderAbsensiList();
+                    renderPenilaianList();
+                    renderLaporan();
+                    
+                    debugLog('✅ Data load completed successfully', 'success');
+                    return; // Success, exit retry loop
+                    
+                } catch (error) {
+                    debugLog(`❌ Load attempt ${retryCount + 1} failed: ${error.message}`, 'error');
+                    retryCount++;
+                    
+                    if (retryCount >= maxRetries) {
+                        updateConnectionStatus('disconnected');
+                        showAlert('error', `❌ Gagal memuat data setelah ${maxRetries} percobaan: ${error.message}. Pastikan Google Apps Script sudah di-deploy dengan akses "Anyone" dan URL sudah benar.`);
+                        
+                        // Show empty state with error info
+                        updateDashboardStats();
+                        renderAnggotaList();
+                        renderAbsensiList();
+                        renderPenilaianList();
+                        renderLaporan();
+                    } else {
+                        // Wait before retry
+                        const waitTime = 2000 * retryCount;
+                        debugLog(`⏳ Waiting ${waitTime}ms before retry...`, 'warning');
+                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                    }
+                }
+            }
+        }
+        
+        // JSONP-style request untuk mengatasi CORS
+        function makeJSONPRequest(action, params = {}) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                
+                debugLog(`📤 JSONP request: ${action} with params: ${JSON.stringify(params)}`, 'info');
+                
+                // Create callback function
+                window[callbackName] = function(data) {
+                    debugLog(`📥 JSONP response for ${action}: ${JSON.stringify(data)}`, 'info');
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                
+                // Build URL with parameters
+                const urlParams = new URLSearchParams({
+                    action: action,
+                    callback: callbackName,
+                    timestamp: Date.now(),
+                    ...params
+                });
+                
+                const fullUrl = `${APPS_SCRIPT_URL}?${urlParams.toString()}`;
+                debugLog(`🔗 Full URL: ${fullUrl}`, 'info');
+                
+                // Create script tag
+                const script = document.createElement('script');
+                script.src = fullUrl;
+                script.onerror = function() {
+                    debugLog(`❌ JSONP script error for ${action}`, 'error');
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(new Error('JSONP request failed'));
+                };
+                
+                // Set timeout
+                setTimeout(() => {
+                    if (window[callbackName]) {
+                        debugLog(`⏰ JSONP timeout for ${action}`, 'error');
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                        reject(new Error('JSONP request timeout'));
+                    }
+                }, 15000);
+                
+                document.body.appendChild(script);
+            });
+        }
+
+        // Add data to sheet - Menggunakan JSONP untuk mengatasi CORS
+        async function addToSheet(action, data) {
+            try {
+                debugLog(`=== ADDTOSHEET START ===`, 'info');
+                debugLog(`Action: ${action}`, 'info');
+                debugLog(`Data: ${JSON.stringify(data)}`, 'info');
+                debugLog(`URL: ${APPS_SCRIPT_URL}`, 'info');
+                debugLog(`Timestamp: ${new Date().toISOString()}`, 'info');
+                
+                // Use JSONP for adding data to avoid CORS issues
+                const result = await makeJSONPRequest(action, data);
+                
+                debugLog(`Raw result for ${action}: ${JSON.stringify(result)}`, 'info');
+                debugLog(`Result type: ${typeof result}`, 'info');
+                debugLog(`Result success: ${result?.success}`, 'info');
+                debugLog(`Result error: ${result?.error}`, 'info');
+                debugLog(`Result message: ${result?.message}`, 'info');
+                debugLog(`=== ADDTOSHEET END ===`, 'info');
+                
+                if (result && result.success) {
+                    return result;
+                } else {
+                    const errorMsg = result?.error || result?.message || `Unknown error from server. Raw result: ${JSON.stringify(result)}`;
+                    throw new Error(errorMsg);
+                }
+            } catch (error) {
+                debugLog(`=== ADDTOSHEET ERROR ===`, 'error');
+                debugLog(`Action: ${action}`, 'error');
+                debugLog(`Data: ${JSON.stringify(data)}`, 'error');
+                debugLog(`Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Test connection function dengan JSONP
+        async function testConnection() {
+            debugLog('🔍 Manual connection test started...', 'info');
+            
+            try {
+                debugLog(`🔗 URL: ${APPS_SCRIPT_URL}`, 'info');
+                debugLog(`📊 Sheets: ${ANGGOTA_SHEET}, ${ABSENSI_SHEET}, ${PENILAIAN_SHEET}`, 'info');
+                debugLog(`⏰ Timestamp: ${new Date().toLocaleString('id-ID')}`, 'info');
+                
+                // Test 1: JSONP connection
+                debugLog('1️⃣ Testing JSONP connection...', 'info');
+                const jsonpResult = await makeJSONPRequest('test');
+                debugLog(`✅ JSONP connection OK: ${JSON.stringify(jsonpResult)}`, 'success');
+                
+                if (jsonpResult && jsonpResult.success) {
+                    debugLog(`✅ Server response: ${jsonpResult.message}`, 'success');
+                }
+                
+                // Test 2: Data loading
+                debugLog('2️⃣ Testing data loading...', 'info');
+                const anggotaData = await makeJSONPRequest('getAnggota');
+                debugLog(`✅ Anggota data: ${anggotaData?.data?.length || 0} records`, 'success');
+                
+                const absensiData = await makeJSONPRequest('getAbsensi');
+                debugLog(`✅ Absensi data: ${absensiData?.data?.length || 0} records`, 'success');
+                
+                const penilaianData = await makeJSONPRequest('getPenilaian');
+                debugLog(`✅ Penilaian data: ${penilaianData?.data?.length || 0} records`, 'success');
+                
+                debugLog('🏁 Manual test completed successfully!', 'success');
+                showAlert('success', '🔍 Test koneksi berhasil! Lihat detail di Debug Panel.');
+                
+            } catch (error) {
+                debugLog(`❌ Manual test failed: ${error.message}`, 'error');
+                showAlert('error', '❌ Test koneksi gagal: ' + error.message);
+            }
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const totalAnggota = currentData.anggota.length;
+            const totalEkstra = [...new Set(currentData.anggota.map(a => a.ekstra))].length;
+            
+            const absensiStats = currentData.absensi.reduce((acc, item) => {
+                acc[item.status] = (acc[item.status] || 0) + 1;
+                return acc;
+            }, {});
+            
+            document.getElementById('totalAnggota').textContent = totalAnggota;
+            document.getElementById('totalEkstra').textContent = totalEkstra;
+            document.getElementById('totalHadir').textContent = absensiStats.H || 0;
+            document.getElementById('totalSakit').textContent = absensiStats.S || 0;
+            document.getElementById('totalIzin').textContent = absensiStats.I || 0;
+            document.getElementById('totalAlpha').textContent = absensiStats.A || 0;
+        }
+
+        // Populate dropdowns with existing data
+        function populateDropdowns() {
+            // Get unique classes and ekstrakurikuler from existing data
+            const uniqueKelas = [...new Set(currentData.anggota.map(a => a.kelas))].sort();
+            const uniqueEkstra = [...new Set(currentData.anggota.map(a => a.ekstra))].sort();
+            
+            // Populate kelas dropdown for anggota form
+            const kelasSelect = document.getElementById('anggotaKelas');
+            if (kelasSelect) {
+                kelasSelect.innerHTML = '<option value="">Pilih Kelas</option>';
+                
+                uniqueKelas.forEach(kelas => {
+                    const option = document.createElement('option');
+                    option.value = kelas;
+                    option.textContent = kelas;
+                    kelasSelect.appendChild(option);
+                });
+                
+                // Add "Lainnya" option for custom input
+                const kelasOtherOption = document.createElement('option');
+                kelasOtherOption.value = 'custom';
+                kelasOtherOption.textContent = '+ Tambah Kelas Baru';
+                kelasSelect.appendChild(kelasOtherOption);
+            }
+            
+            // Populate ekstrakurikuler dropdown for anggota form
+            const ekstraSelect = document.getElementById('anggotaEkstra');
+            if (ekstraSelect) {
+                ekstraSelect.innerHTML = '<option value="">Pilih Ekstrakurikuler</option>';
+                
+                uniqueEkstra.forEach(ekstra => {
+                    const option = document.createElement('option');
+                    option.value = ekstra;
+                    option.textContent = ekstra;
+                    ekstraSelect.appendChild(option);
+                });
+                
+                // Add "Lainnya" option for custom input
+                const ekstraOtherOption = document.createElement('option');
+                ekstraOtherOption.value = 'custom';
+                ekstraOtherOption.textContent = '+ Tambah Ekstrakurikuler Baru';
+                ekstraSelect.appendChild(ekstraOtherOption);
+            }
+            
+            // Populate ekstrakurikuler dropdown for absensi form
+            const absensiEkstraSelect = document.getElementById('absensiEkstra');
+            if (absensiEkstraSelect) {
+                absensiEkstraSelect.innerHTML = '<option value="">Pilih Ekstrakurikuler</option>';
+                
+                uniqueEkstra.forEach(ekstra => {
+                    const option = document.createElement('option');
+                    option.value = ekstra;
+                    option.textContent = ekstra;
+                    absensiEkstraSelect.appendChild(option);
+                });
+                
+                // Enable/disable load button based on selection
+                const loadBtn = document.getElementById('loadAnggotaBtn');
+                if (loadBtn) {
+                    loadBtn.disabled = !absensiEkstraSelect.value;
+                }
+            }
+        }
+
+        // Handle dropdown changes to show/hide custom inputs
+        function setupDropdownHandlers() {
+            const kelasSelect = document.getElementById('anggotaKelas');
+            const kelasCustom = document.getElementById('anggotaKelasCustom');
+            
+            kelasSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    kelasCustom.style.display = 'block';
+                    kelasCustom.required = true;
+                    this.required = false;
+                } else {
+                    kelasCustom.style.display = 'none';
+                    kelasCustom.required = false;
+                    this.required = true;
+                }
+            });
+            
+            const ekstraSelect = document.getElementById('anggotaEkstra');
+            const ekstraCustom = document.getElementById('anggotaEkstraCustom');
+            
+            ekstraSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    ekstraCustom.style.display = 'block';
+                    ekstraCustom.required = true;
+                    this.required = false;
+                } else {
+                    ekstraCustom.style.display = 'none';
+                    ekstraCustom.required = false;
+                    this.required = true;
+                }
+            });
+        }
+
+        // Setup form handlers
+        function setupFormHandlers() {
+            // Anggota form
+            document.getElementById('anggotaForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                
+                // Get kelas value (either from dropdown or custom input)
+                const kelasSelect = document.getElementById('anggotaKelas');
+                const kelasCustom = document.getElementById('anggotaKelasCustom');
+                const kelas = kelasSelect.value === 'custom' ? kelasCustom.value.trim() : kelasSelect.value;
+                
+                // Get ekstra value (either from dropdown or custom input)
+                const ekstraSelect = document.getElementById('anggotaEkstra');
+                const ekstraCustom = document.getElementById('anggotaEkstraCustom');
+                const ekstra = ekstraSelect.value === 'custom' ? ekstraCustom.value.trim() : ekstraSelect.value;
+                
+                const nama = formData.get('nama').trim();
+                
+                // Validasi input
+                if (!nama || !kelas || !ekstra) {
+                    showAlert('error', 'Semua field harus diisi!');
+                    return;
+                }
+                
+                try {
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '⏳ Menambahkan...';
+                    showAlert('info', `🔄 Sedang menambahkan anggota ${nama}...`);
+                    
+                    debugLog(`➕ Adding anggota: ${JSON.stringify({ nama, kelas, ekstra })}`, 'info');
+                    
+                    const result = await addToSheet('addAnggota', {
+                        nama: nama,
+                        kelas: kelas,
+                        ekstra: ekstra
+                    });
+                    
+                    debugLog(`✅ Add anggota result: ${JSON.stringify(result)}`, 'success');
+                    
+                    if (result.success) {
+                        // Tambahkan data baru ke array lokal
+                        const newAnggota = {
+                            nama: nama,
+                            kelas: kelas,
+                            ekstra: ekstra,
+                            id_anggota: currentData.anggota.length + 2,
+                            row_number: currentData.anggota.length + 2
+                        };
+                        
+                        currentData.anggota.push(newAnggota);
+                        
+                        // Update dashboard stats
+                        updateDashboardStats();
+                        
+                        // Update dropdowns dengan data baru
+                        populateDropdowns();
+                        
+                        // Reset filter jika sedang aktif
+                        if (isFiltered) {
+                            isFiltered = false;
+                            filteredAnggota = [];
+                            document.getElementById('searchAnggota').value = '';
+                            updateSearchResults();
+                        }
+                        
+                        // Reset pagination to first page
+                        currentPage = 1;
+                        
+                        // Re-render anggota list
+                        renderAnggotaList();
+                        
+                        // Re-render laporan
+                        renderLaporan();
+                        
+                        showAlert('success', `✅ Berhasil! Anggota ${nama} telah ditambahkan ke ${ekstra} kelas ${kelas}`);
+                        
+                        // Reset form
+                        e.target.reset();
+                        kelasCustom.style.display = 'none';
+                        ekstraCustom.style.display = 'none';
+                        kelasCustom.required = false;
+                        ekstraCustom.required = false;
+                        kelasSelect.required = true;
+                        ekstraSelect.required = true;
+                    } else {
+                        throw new Error(result.error || result.message || 'Gagal menambahkan anggota');
+                    }
+                } catch (error) {
+                    debugLog(`❌ Error adding anggota: ${error.message}`, 'error');
+                    showAlert('error', '❌ Gagal menambahkan anggota: ' + error.message);
+                } finally {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            });
+            
+            // Penilaian form
+            document.getElementById('penilaianForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                
+                try {
+                    const result = await addToSheet('addPenilaian', {
+                        ekstra: formData.get('ekstra'),
+                        nama: formData.get('nama'),
+                        kelas: formData.get('kelas'),
+                        nilai: formData.get('nilai'),
+                        keterangan: formData.get('keterangan') || ''
+                    });
+                    
+                    debugLog(`✅ Add penilaian result: ${JSON.stringify(result)}`, 'success');
+                    
+                    if (result.success) {
+                        // Tambahkan data penilaian baru ke array lokal
+                        const newPenilaian = {
+                            ekstra: formData.get('ekstra'),
+                            nama: formData.get('nama'),
+                            kelas: formData.get('kelas'),
+                            nilai: formData.get('nilai'),
+                            keterangan: formData.get('keterangan') || ''
+                        };
+                        
+                        currentData.penilaian.push(newPenilaian);
+                        
+                        // Re-render penilaian list dan laporan
+                        renderPenilaianList();
+                        renderLaporan();
+                        
+                        showAlert('success', 'Penilaian berhasil disimpan!');
+                        e.target.reset();
+                    } else {
+                        throw new Error(result.error || result.message || 'Gagal menyimpan penilaian');
+                    }
+                } catch (error) {
+                    debugLog(`❌ Error adding penilaian: ${error.message}`, 'error');
+                    showAlert('error', 'Gagal menyimpan penilaian: ' + error.message);
+                }
+            });
+        }
+
+        // Render anggota list with pagination
+        function renderAnggotaList() {
+            const container = document.getElementById('anggotaList');
+            
+            if (currentData.anggota.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16,4C16.88,4 17.67,4.38 18.18,5H20A2,2 0 0,1 22,7V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V7A2,2 0 0,1 4,5H5.82C6.33,4.38 7.12,4 8,4H16M8,6A1,1 0 0,0 7,7A1,1 0 0,0 8,8H16A1,1 0 0,0 17,7A1,1 0 0,0 16,6H8Z" />
+                        </svg>
+                        <h3>Belum Ada Anggota</h3>
+                        <p>Tambahkan anggota pertama menggunakan form di atas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Use filtered data if filter is active, otherwise use all data
+            const dataToShow = isFiltered ? filteredAnggota : currentData.anggota;
+            
+            if (isFiltered && dataToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+                        </svg>
+                        <h3>Tidak Ada Hasil</h3>
+                        <p>Tidak ditemukan anggota yang sesuai dengan filter pencarian</p>
+                        <button class="btn btn-primary" onclick="clearFilters()" style="margin-top: 15px;">
+                            🗑️ Reset Filter
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate pagination
+            const totalItems = dataToShow.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            const paginatedData = dataToShow.slice(startIndex, endIndex);
+            
+            const tableHTML = `
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>Ekstrakurikuler</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${paginatedData.map((anggota, index) => {
+                                const actualIndex = startIndex + index;
+                                const originalIndex = currentData.anggota.findIndex(a => 
+                                    a.nama === anggota.nama && a.kelas === anggota.kelas && a.ekstra === anggota.ekstra
+                                );
+                                return `
+                                    <tr id="anggota-row-${originalIndex}">
+                                        <td>${actualIndex + 1}</td>
+                                        <td class="editable-nama">${anggota.nama}</td>
+                                        <td class="editable-kelas">${anggota.kelas}</td>
+                                        <td class="editable-ekstra">${anggota.ekstra}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-edit" onclick="editAnggota(${originalIndex}, '${anggota.nama}', '${anggota.kelas}', '${anggota.ekstra}')" title="Edit Anggota">
+                                                ✏️
+                                            </button>
+                                            <button class="btn btn-sm btn-delete" onclick="deleteAnggota(${originalIndex}, '${anggota.nama}', '${anggota.kelas}', '${anggota.ekstra}')" title="Hapus Anggota">
+                                                🗑️
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                ${totalPages > 1 ? `
+                    <div class="pagination">
+                        <button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>
+                            ⏮️ Pertama
+                        </button>
+                        <button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                            ⬅️ Sebelumnya
+                        </button>
+                        
+                        <div class="pagination-info">
+                            Halaman ${currentPage} dari ${totalPages} (${startIndex + 1}-${endIndex} dari ${totalItems} ${isFiltered ? 'hasil pencarian' : 'anggota'})
+                        </div>
+                        
+                        <button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                            Selanjutnya ➡️
+                        </button>
+                        <button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>
+                            Terakhir ⏭️
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Render absensi list with pagination, sorting, and edit/delete buttons
+        function renderAbsensiList() {
+            const container = document.getElementById('absensiList');
+            
+            if (currentData.absensi.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" />
+                        </svg>
+                        <h3>Belum Ada Data Absensi</h3>
+                        <p>Mulai catat absensi menggunakan form di atas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Use filtered data if filter is active, otherwise use all data
+            const dataToShow = isAbsensiFiltered ? filteredAbsensi : currentData.absensi;
+            
+            if (isAbsensiFiltered && dataToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+                        </svg>
+                        <h3>Tidak Ada Hasil</h3>
+                        <p>Tidak ditemukan data absensi yang sesuai dengan filter pencarian</p>
+                        <button class="btn btn-primary" onclick="clearAbsensiFilters()" style="margin-top: 15px;">
+                            🗑️ Reset Filter
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort absensi by date (newest first) then by ekstra, kelas, nama
+            const sortedAbsensi = [...dataToShow].sort((a, b) => {
+                // First sort by date (newest first)
+                const dateA = new Date(a.tanggal);
+                const dateB = new Date(b.tanggal);
+                if (dateA.getTime() !== dateB.getTime()) {
+                    return dateB.getTime() - dateA.getTime(); // Newest first
+                }
+                
+                // Then by ekstrakurikuler
+                if (a.ekstra !== b.ekstra) {
+                    return a.ekstra.localeCompare(b.ekstra);
+                }
+                
+                // Then by kelas
+                if (a.kelas !== b.kelas) {
+                    return a.kelas.localeCompare(b.kelas);
+                }
+                
+                // Finally by nama
+                return a.nama.localeCompare(b.nama);
+            });
+            
+            // Calculate pagination for absensi
+            const totalItems = sortedAbsensi.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentAbsensiPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            const paginatedData = sortedAbsensi.slice(startIndex, endIndex);
+            
+            const tableHTML = `
+                <div class="form-container" style="margin-bottom: 20px;">
+                    <h3>📋 Data Absensi</h3>
+                    <p style="color: #6b7280; margin: 0;">
+                        Menampilkan ${startIndex + 1}-${endIndex} dari ${totalItems} data absensi ${isAbsensiFiltered ? '(hasil pencarian) ' : ''}(diurutkan berdasarkan tanggal terbaru)
+                    </p>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Ekstrakurikuler</th>
+                                <th>Kelas</th>
+                                <th>Nama</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${paginatedData.map((absensi, index) => {
+                                const actualIndex = startIndex + index;
+                                const originalIndex = currentData.absensi.findIndex(a => 
+                                    a.tanggal === absensi.tanggal && 
+                                    a.ekstra === absensi.ekstra && 
+                                    a.kelas === absensi.kelas && 
+                                    a.nama === absensi.nama
+                                );
+                                const formattedDate = new Date(absensi.tanggal).toLocaleDateString('id-ID', {
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                                return `
+                                    <tr id="absensi-row-${originalIndex}">
+                                        <td>${actualIndex + 1}</td>
+                                        <td>${formattedDate}</td>
+                                        <td>${absensi.ekstra}</td>
+                                        <td>${absensi.kelas}</td>
+                                        <td>${absensi.nama}</td>
+                                        <td>${getStatusBadge(absensi.status)}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-edit" onclick="editAbsensi(${originalIndex}, '${absensi.tanggal}', '${absensi.ekstra}', '${absensi.kelas}', '${absensi.nama}', '${absensi.status}')" title="Edit Absensi">
+                                                ✏️
+                                            </button>
+                                            <button class="btn btn-sm btn-delete" onclick="deleteAbsensi(${originalIndex}, '${absensi.tanggal}', '${absensi.ekstra}', '${absensi.kelas}', '${absensi.nama}')" title="Hapus Absensi">
+                                                🗑️
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                ${totalPages > 1 ? `
+                    <div class="pagination">
+                        <button onclick="goToAbsensiPage(1)" ${currentAbsensiPage === 1 ? 'disabled' : ''}>
+                            ⏮️ Pertama
+                        </button>
+                        <button onclick="goToAbsensiPage(${currentAbsensiPage - 1})" ${currentAbsensiPage === 1 ? 'disabled' : ''}>
+                            ⬅️ Sebelumnya
+                        </button>
+                        
+                        <div class="pagination-info">
+                            Halaman ${currentAbsensiPage} dari ${totalPages}
+                        </div>
+                        
+                        <button onclick="goToAbsensiPage(${currentAbsensiPage + 1})" ${currentAbsensiPage === totalPages ? 'disabled' : ''}>
+                            Selanjutnya ➡️
+                        </button>
+                        <button onclick="goToAbsensiPage(${totalPages})" ${currentAbsensiPage === totalPages ? 'disabled' : ''}>
+                            Terakhir ⏭️
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Render penilaian list
+        function renderPenilaianList() {
+            const container = document.getElementById('penilaianList');
+            
+            if (currentData.penilaian.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                        </svg>
+                        <h3>Belum Ada Data Penilaian</h3>
+                        <p>Input penilaian pertama menggunakan form di atas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const tableHTML = `
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ekstrakurikuler</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>Nilai</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${currentData.penilaian.map(penilaian => `
+                                <tr>
+                                    <td>${penilaian.ekstra}</td>
+                                    <td>${penilaian.nama}</td>
+                                    <td>${penilaian.kelas}</td>
+                                    <td>${getNilaiBadge(penilaian.nilai)}</td>
+                                    <td>${penilaian.keterangan || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Render laporan
+        function renderLaporan() {
+            const container = document.getElementById('laporanContent');
+            
+            // Group data by ekstrakurikuler
+            const ekstraGroups = {};
+            
+            currentData.anggota.forEach(anggota => {
+                if (!ekstraGroups[anggota.ekstra]) {
+                    ekstraGroups[anggota.ekstra] = {
+                        anggota: [],
+                        absensi: [],
+                        penilaian: []
+                    };
+                }
+                ekstraGroups[anggota.ekstra].anggota.push(anggota);
+            });
+            
+            currentData.absensi.forEach(absensi => {
+                if (ekstraGroups[absensi.ekstra]) {
+                    ekstraGroups[absensi.ekstra].absensi.push(absensi);
+                }
+            });
+            
+            currentData.penilaian.forEach(penilaian => {
+                if (ekstraGroups[penilaian.ekstra]) {
+                    ekstraGroups[penilaian.ekstra].penilaian.push(penilaian);
+                }
+            });
+            
+            let laporanHTML = '';
+            
+            Object.keys(ekstraGroups).forEach(ekstra => {
+                const group = ekstraGroups[ekstra];
+                const absensiStats = group.absensi.reduce((acc, item) => {
+                    acc[item.status] = (acc[item.status] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                laporanHTML += `
+                    <div class="form-container">
+                        <h3>📚 ${ekstra}</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <h3>${group.anggota.length}</h3>
+                                <p>Total Anggota</p>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <h3>${absensiStats.H || 0}</h3>
+                                <p>Hadir</p>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <h3>${absensiStats.S || 0}</h3>
+                                <p>Sakit</p>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                <h3>${absensiStats.I || 0}</h3>
+                                <p>Izin</p>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                                <h3>${absensiStats.A || 0}</h3>
+                                <p>Alpha</p>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                                <h3>${group.penilaian.length}</h3>
+                                <p>Penilaian</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (laporanHTML === '') {
+                laporanHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                        </svg>
+                        <h3>Belum Ada Data Laporan</h3>
+                        <p>Tambahkan data anggota dan absensi untuk melihat laporan</p>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = laporanHTML;
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'H': '<span class="badge badge-success">Hadir</span>',
+                'S': '<span class="badge badge-warning">Sakit</span>',
+                'I': '<span class="badge badge-info">Izin</span>',
+                'A': '<span class="badge badge-danger">Alpha</span>'
+            };
+            return badges[status] || status;
+        }
+
+        // Get nilai badge
+        function getNilaiBadge(nilai) {
+            const badges = {
+                'SANGAT BAIK': '<span class="badge badge-success">SANGAT BAIK</span>',
+                'BAIK': '<span class="badge badge-info">BAIK</span>',
+                'SEDANG': '<span class="badge badge-warning">SEDANG</span>',
+                'KURANG': '<span class="badge badge-danger">KURANG</span>'
+            };
+            return badges[nilai] || nilai;
+        }
+
+        // Pagination functions
+        function goToPage(page) {
+            const dataToShow = isFiltered ? filteredAnggota : currentData.anggota;
+            const totalPages = Math.ceil(dataToShow.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderAnggotaList();
+            }
+        }
+
+        // Pagination function for absensi
+        function goToAbsensiPage(page) {
+            const dataToShow = isAbsensiFiltered ? filteredAbsensi : currentData.absensi;
+            const totalPages = Math.ceil(dataToShow.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentAbsensiPage = page;
+                renderAbsensiList();
+            }
+        }
+
+        // Filter anggota function
+        function filterAnggota() {
+            const searchTerm = document.getElementById('searchAnggota').value.toLowerCase().trim();
+            
+            // Reset to first page when filtering
+            currentPage = 1;
+            
+            // If no search term, show all data
+            if (!searchTerm) {
+                isFiltered = false;
+                filteredAnggota = [];
+                updateSearchResults();
+                renderAnggotaList();
+                return;
+            }
+            
+            // Apply universal search - search in nama, kelas, and ekstra
+            filteredAnggota = currentData.anggota.filter(anggota => {
+                const matchesNama = anggota.nama.toLowerCase().includes(searchTerm);
+                const matchesKelas = anggota.kelas.toLowerCase().includes(searchTerm);
+                const matchesEkstra = anggota.ekstra.toLowerCase().includes(searchTerm);
+                
+                return matchesNama || matchesKelas || matchesEkstra;
+            });
+            
+            isFiltered = true;
+            updateSearchResults();
+            renderAnggotaList();
+        }
+
+        // Filter absensi function
+        function filterAbsensiData() {
+            const searchTerm = document.getElementById('searchAbsensi').value.toLowerCase().trim();
+            
+            // Reset to first page when filtering
+            currentAbsensiPage = 1;
+            
+            // If no search term, show all data
+            if (!searchTerm) {
+                isAbsensiFiltered = false;
+                filteredAbsensi = [];
+                updateAbsensiSearchResults();
+                renderAbsensiList();
+                return;
+            }
+            
+            // Apply universal search - search in nama, ekstra, and tanggal
+            filteredAbsensi = currentData.absensi.filter(absensi => {
+                const matchesNama = absensi.nama.toLowerCase().includes(searchTerm);
+                const matchesEkstra = absensi.ekstra.toLowerCase().includes(searchTerm);
+                const matchesKelas = absensi.kelas.toLowerCase().includes(searchTerm);
+                const matchesTanggal = absensi.tanggal.includes(searchTerm) || 
+                    new Date(absensi.tanggal).toLocaleDateString('id-ID').toLowerCase().includes(searchTerm);
+                
+                return matchesNama || matchesEkstra || matchesKelas || matchesTanggal;
+            });
+            
+            isAbsensiFiltered = true;
+            updateAbsensiSearchResults();
+            renderAbsensiList();
+        }
+        
+        // Update search results info
+        function updateSearchResults() {
+            const searchResults = document.getElementById('searchResults');
+            const filteredCount = document.getElementById('filteredCount');
+            const totalCount = document.getElementById('totalCount');
+            
+            if (isFiltered) {
+                searchResults.style.display = 'block';
+                filteredCount.textContent = filteredAnggota.length;
+                totalCount.textContent = currentData.anggota.length;
+            } else {
+                searchResults.style.display = 'none';
+            }
+        }
+
+        // Update absensi search results info
+        function updateAbsensiSearchResults() {
+            const searchResults = document.getElementById('searchAbsensiResults');
+            const filteredCount = document.getElementById('filteredAbsensiCount');
+            const totalCount = document.getElementById('totalAbsensiCount');
+            
+            if (isAbsensiFiltered) {
+                searchResults.style.display = 'block';
+                filteredCount.textContent = filteredAbsensi.length;
+                totalCount.textContent = currentData.absensi.length;
+            } else {
+                searchResults.style.display = 'none';
+            }
+        }
+        
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('searchAnggota').value = '';
+            
+            isFiltered = false;
+            filteredAnggota = [];
+            currentPage = 1;
+            
+            updateSearchResults();
+            renderAnggotaList();
+            
+            showAlert('info', 'Pencarian berhasil direset');
+        }
+
+        // Clear absensi filters
+        function clearAbsensiFilters() {
+            document.getElementById('searchAbsensi').value = '';
+            
+            isAbsensiFiltered = false;
+            filteredAbsensi = [];
+            currentAbsensiPage = 1;
+            
+            updateAbsensiSearchResults();
+            renderAbsensiList();
+            
+            showAlert('info', 'Pencarian absensi berhasil direset');
+        }
+
+        // Load anggota for absensi
+        function loadAnggotaForAbsensi() {
+            const tanggal = document.getElementById('absensiTanggal').value;
+            const ekstra = document.getElementById('absensiEkstra').value;
+            const loadBtn = document.getElementById('loadAnggotaBtn');
+            
+            // Enable/disable load button
+            loadBtn.disabled = !ekstra;
+            
+            if (!tanggal || !ekstra) {
+                document.getElementById('absensiAnggotaContainer').style.display = 'none';
+                return;
+            }
+            
+            // Filter anggota berdasarkan ekstrakurikuler yang dipilih
+            const anggotaEkstra = currentData.anggota.filter(a => a.ekstra === ekstra);
+            
+            if (anggotaEkstra.length === 0) {
+                showAlert('warning', `Tidak ada anggota terdaftar di ekstrakurikuler ${ekstra}`);
+                document.getElementById('absensiAnggotaContainer').style.display = 'none';
+                return;
+            }
+            
+            // Sort by kelas then by nama
+            anggotaEkstra.sort((a, b) => {
+                if (a.kelas !== b.kelas) {
+                    return a.kelas.localeCompare(b.kelas);
+                }
+                return a.nama.localeCompare(b.nama);
+            });
+            
+            // Check existing absensi for this date and ekstra
+            const existingAbsensi = currentData.absensi.filter(a => 
+                a.tanggal === tanggal && a.ekstra === ekstra
+            );
+            
+            // Create table for anggota list
+            let tableHTML = `
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kelas</th>
+                                <th>Nama</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            anggotaEkstra.forEach((anggota, index) => {
+                // Check if this student already has absensi for this date
+                const existingRecord = existingAbsensi.find(a => 
+                    a.nama === anggota.nama && a.kelas === anggota.kelas
+                );
+                
+                const currentStatus = existingRecord ? existingRecord.status : 'H';
+                const isExisting = !!existingRecord;
+                
+                tableHTML += `
+                    <tr ${isExisting ? 'style="background-color: #fef3c7;"' : ''}>
+                        <td>${index + 1}</td>
+                        <td>${anggota.kelas}</td>
+                        <td>
+                            ${anggota.nama}
+                            ${isExisting ? '<span style="color: #92400e; font-size: 0.8rem; margin-left: 5px;">(Sudah ada)</span>' : ''}
+                        </td>
+                        <td>
+                            <select class="edit-select" id="status-${index}" data-nama="${anggota.nama}" data-kelas="${anggota.kelas}" ${isExisting ? 'disabled' : ''}>
+                                <option value="H" ${currentStatus === 'H' ? 'selected' : ''}>Hadir</option>
+                                <option value="S" ${currentStatus === 'S' ? 'selected' : ''}>Sakit</option>
+                                <option value="I" ${currentStatus === 'I' ? 'selected' : ''}>Izin</option>
+                                <option value="A" ${currentStatus === 'A' ? 'selected' : ''}>Alpha</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Update UI
+            document.getElementById('selectedEkstraName').textContent = ekstra;
+            document.getElementById('selectedTanggal').textContent = new Date(tanggal).toLocaleDateString('id-ID');
+            document.getElementById('absensiAnggotaList').innerHTML = tableHTML;
+            document.getElementById('absensiAnggotaContainer').style.display = 'block';
+            
+            // Show warning if some students already have absensi
+            if (existingAbsensi.length > 0) {
+                showAlert('warning', `${existingAbsensi.length} siswa sudah memiliki data absensi untuk tanggal ini. Data yang sudah ada akan dilewati.`);
+            }
+        }
+        
+        // Simpan semua absensi - OPTIMIZED VERSION WITH PROGRESS
+        async function simpanSemuaAbsensi() {
+            const tanggal = document.getElementById('absensiTanggal').value;
+            const ekstra = document.getElementById('absensiEkstra').value;
+            const simpanBtn = document.getElementById('simpanAbsensiBtn');
+            
+            if (!tanggal || !ekstra) {
+                showAlert('error', 'Tanggal dan ekstrakurikuler harus dipilih!');
+                return;
+            }
+            
+            // Collect all status data
+            const statusSelects = document.querySelectorAll('#absensiAnggotaList select:not([disabled])');
+            
+            if (statusSelects.length === 0) {
+                showAlert('warning', 'Tidak ada data baru untuk disimpan.');
+                return;
+            }
+            
+            // Show progress modal
+            showProgressModal(`💾 Menyimpan ${statusSelects.length} Data Absensi`);
+            
+            // Show loading state
+            simpanBtn.disabled = true;
+            simpanBtn.innerHTML = '⏳ Menyimpan...';
+            
+            debugLog(`📤 Starting batch absensi save for ${statusSelects.length} students`, 'info');
+            
+            try {
+                // Stage 1: Prepare data (10%)
+                updateProgress(10, 'Menyiapkan data absensi...');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const batchData = [];
+                statusSelects.forEach(select => {
+                    batchData.push({
+                        tanggal: tanggal,
+                        ekstra: ekstra,
+                        kelas: select.dataset.kelas,
+                        nama: select.dataset.nama,
+                        status: select.value
+                    });
+                });
+                
+                debugLog(`📋 Batch data prepared: ${JSON.stringify(batchData)}`, 'info');
+                
+                // Stage 2: Send to server (30%)
+                updateProgress(30, `Mengirim ${batchData.length} data absensi ke server...`);
+                
+                // Send batch request
+                const result = await addToSheet('addAbsensiBatch', {
+                    absensiData: JSON.stringify(batchData)
+                });
+                
+                debugLog(`📥 Batch save result: ${JSON.stringify(result)}`, 'info');
+                
+                // Stage 3: Process on server (70%)
+                updateProgress(70, 'Memproses data di server...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                if (result && result.success) {
+                    // Stage 4: Update local data (90%)
+                    updateProgress(90, 'Memperbarui tampilan...');
+                    
+                    // Add all data to local storage
+                    batchData.forEach(absensi => {
+                        currentData.absensi.push(absensi);
+                    });
+                    
+                    // Reset absensi page to first page to show new data
+                    currentAbsensiPage = 1;
+                    
+                    // Update UI
+                    updateDashboardStats();
+                    renderAbsensiList();
+                    renderLaporan();
+                    
+                    // Reset form
+                    batalAbsensi();
+                    
+                    // Stage 5: Complete (100%)
+                    updateProgress(100, 'Selesai!');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    debugLog(`✅ Batch save completed successfully`, 'success');
+                    
+                    // Hide progress and show success
+                    hideProgressModal();
+                    showAlert('success', `✅ Berhasil menyimpan absensi untuk ${batchData.length} siswa!`);
+                    
+                } else {
+                    throw new Error(result?.error || result?.message || 'Gagal menyimpan data absensi');
+                }
+                
+            } catch (error) {
+                debugLog(`❌ Batch save error: ${error.message}`, 'error');
+                
+                // Hide progress modal
+                hideProgressModal();
+                
+                showAlert('error', `❌ Gagal menyimpan absensi: ${error.message}`);
+                
+                // If batch fails, try individual saves as fallback
+                debugLog(`🔄 Attempting individual saves as fallback...`, 'warning');
+                showAlert('info', '🔄 Mencoba menyimpan satu per satu...');
+                
+                let successCount = 0;
+                let errorCount = 0;
+                
+                for (const select of statusSelects) {
+                    try {
+                        const individualResult = await addToSheet('addAbsensi', {
+                            tanggal: tanggal,
+                            ekstra: ekstra,
+                            kelas: select.dataset.kelas,
+                            nama: select.dataset.nama,
+                            status: select.value
+                        });
+                        
+                        if (individualResult.success) {
+                            currentData.absensi.push({
+                                tanggal: tanggal,
+                                ekstra: ekstra,
+                                kelas: select.dataset.kelas,
+                                nama: select.dataset.nama,
+                                status: select.value
+                            });
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                        
+                    } catch (individualError) {
+                        debugLog(`❌ Individual save failed for ${select.dataset.nama}: ${individualError.message}`, 'error');
+                        errorCount++;
+                    }
+                }
+                
+                if (successCount > 0) {
+                    // Reset absensi page to first page
+                    currentAbsensiPage = 1;
+                    
+                    // Update UI
+                    updateDashboardStats();
+                    renderAbsensiList();
+                    renderLaporan();
+                    
+                    // Reset form
+                    batalAbsensi();
+                    
+                    showAlert('warning', `⚠️ Berhasil menyimpan ${successCount} dari ${statusSelects.length} data absensi`);
+                } else {
+                    showAlert('error', '❌ Semua penyimpanan gagal. Periksa koneksi internet.');
+                }
+                
+            } finally {
+                // Reset button
+                simpanBtn.disabled = false;
+                simpanBtn.innerHTML = '💾 Simpan Semua Absensi';
+            }
+        }
+        
+        // Batal absensi
+        function batalAbsensi() {
+            document.getElementById('absensiAnggotaContainer').style.display = 'none';
+            document.getElementById('absensiEkstra').value = '';
+            document.getElementById('loadAnggotaBtn').disabled = true;
+        }
+
+        // Edit absensi functionality
+        function editAbsensi(index, originalTanggal, originalEkstra, originalKelas, originalNama, originalStatus) {
+            debugLog(`✏️ Edit absensi started - Index: ${index}`, 'info');
+            
+            const absensi = currentData.absensi[index];
+            const row = document.getElementById(`absensi-row-${index}`);
+            
+            if (!absensi || !row) {
+                debugLog(`❌ Edit failed - absensi or row not found`, 'error');
+                showAlert('error', 'Data absensi tidak ditemukan');
+                return;
+            }
+            
+            // Get unique ekstrakurikuler for dropdown
+            const uniqueEkstra = [...new Set(currentData.anggota.map(a => a.ekstra))].sort();
+            
+            // Replace table cells with input fields
+            row.innerHTML = `
+                <td>${row.querySelector('td').textContent}</td>
+                <td>
+                    <input type="date" class="edit-input" id="edit-tanggal-${index}" value="${absensi.tanggal}" required>
+                </td>
+                <td>
+                    <select class="edit-select" id="edit-ekstra-${index}" required>
+                        ${uniqueEkstra.map(ekstra => 
+                            `<option value="${ekstra}" ${ekstra === absensi.ekstra ? 'selected' : ''}>${ekstra}</option>`
+                        ).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="edit-input" id="edit-kelas-${index}" value="${absensi.kelas}" required>
+                </td>
+                <td>
+                    <input type="text" class="edit-input" id="edit-nama-${index}" value="${absensi.nama}" required>
+                </td>
+                <td>
+                    <select class="edit-select" id="edit-status-${index}" required>
+                        <option value="H" ${absensi.status === 'H' ? 'selected' : ''}>Hadir</option>
+                        <option value="S" ${absensi.status === 'S' ? 'selected' : ''}>Sakit</option>
+                        <option value="I" ${absensi.status === 'I' ? 'selected' : ''}>Izin</option>
+                        <option value="A" ${absensi.status === 'A' ? 'selected' : ''}>Alpha</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-save" onclick="saveAbsensi(${index}, '${originalTanggal}', '${originalEkstra}', '${originalKelas}', '${originalNama}')" title="Simpan Perubahan">
+                        💾
+                    </button>
+                    <button class="btn btn-sm btn-cancel" onclick="cancelEditAbsensi(${index})" title="Batal Edit">
+                        ❌
+                    </button>
+                </td>
+            `;
+            
+            // Focus on tanggal input
+            document.getElementById(`edit-tanggal-${index}`).focus();
+            
+            debugLog(`✅ Edit mode activated for absensi ${originalNama}`, 'success');
+        }
+
+        // Save edited absensi
+        async function saveAbsensi(index, originalTanggal, originalEkstra, originalKelas, originalNama) {
+            debugLog(`💾 Save absensi started - Index: ${index}`, 'info');
+            
+            const absensi = currentData.absensi[index];
+            
+            if (!absensi) {
+                debugLog(`❌ Save failed - absensi not found at index ${index}`, 'error');
+                showAlert('error', 'Data absensi tidak ditemukan');
+                return;
+            }
+            
+            // Get new values
+            const newTanggal = document.getElementById(`edit-tanggal-${index}`).value;
+            const newEkstra = document.getElementById(`edit-ekstra-${index}`).value;
+            const newKelas = document.getElementById(`edit-kelas-${index}`).value.trim();
+            const newNama = document.getElementById(`edit-nama-${index}`).value.trim();
+            const newStatus = document.getElementById(`edit-status-${index}`).value;
+            
+            debugLog(`📝 New values: ${JSON.stringify({newTanggal, newEkstra, newKelas, newNama, newStatus})}`, 'info');
+            
+            // Validation
+            if (!newTanggal || !newEkstra || !newKelas || !newNama || !newStatus) {
+                showAlert('error', 'Semua field harus diisi!');
+                return;
+            }
+            
+            // PERBAIKAN: Normalize tanggal format untuk perbandingan
+            const normalizeDate = (dateStr) => {
+                if (!dateStr) return '';
+                // Convert to YYYY-MM-DD format
+                const date = new Date(dateStr);
+                return date.toISOString().split('T')[0];
+            };
+            
+            const normalizedOriginalTanggal = normalizeDate(originalTanggal);
+            const normalizedCurrentTanggal = normalizeDate(absensi.tanggal);
+            const normalizedNewTanggal = normalizeDate(newTanggal);
+            
+            debugLog(`📅 Date normalization:`, 'info');
+            debugLog(`   Original: ${originalTanggal} → ${normalizedOriginalTanggal}`, 'info');
+            debugLog(`   Current: ${absensi.tanggal} → ${normalizedCurrentTanggal}`, 'info');
+            debugLog(`   New: ${newTanggal} → ${normalizedNewTanggal}`, 'info');
+            
+            // Check if data actually changed
+            if (normalizedNewTanggal === normalizedCurrentTanggal && newEkstra === absensi.ekstra && 
+                newKelas === absensi.kelas && newNama === absensi.nama && newStatus === absensi.status) {
+                debugLog(`ℹ️ No changes detected`, 'info');
+                showAlert('info', 'Tidak ada perubahan data');
+                cancelEditAbsensi(index);
+                return;
+            }
+            
+            try {
+                // Show loading state
+                const saveBtn = document.querySelector(`#absensi-row-${index} .btn-save`);
+                const originalText = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '⏳';
+                
+                showAlert('info', `🔄 Sedang menyimpan perubahan untuk ${newNama}...`);
+                
+                debugLog(`📤 Sending update request to server...`, 'info');
+                
+                // PERBAIKAN: Gunakan format tanggal yang konsisten (YYYY-MM-DD)
+                const updateParams = {
+                    originalTanggal: normalizedOriginalTanggal,  // Format YYYY-MM-DD
+                    originalEkstra: originalEkstra,
+                    originalKelas: originalKelas,
+                    originalNama: originalNama,
+                    newTanggal: normalizedNewTanggal,  // Format YYYY-MM-DD
+                    newEkstra: newEkstra,
+                    newKelas: newKelas,
+                    newNama: newNama,
+                    newStatus: newStatus
+                };
+                
+                debugLog(`📋 Update params: ${JSON.stringify(updateParams)}`, 'info');
+                
+                // Update via Google Sheets using normalized date format
+                const result = await addToSheet('updateAbsensi', updateParams);
+                
+                debugLog(`📥 Update result: ${JSON.stringify(result)}`, 'info');
+                
+                if (result.success) {
+                    // Update local data dengan format yang konsisten
+                    currentData.absensi[index] = {
+                        tanggal: normalizedNewTanggal,  // Simpan dalam format YYYY-MM-DD
+                        ekstra: newEkstra,
+                        kelas: newKelas,
+                        nama: newNama,
+                        status: newStatus
+                    };
+                    
+                    // Update dashboard stats
+                    updateDashboardStats();
+                    
+                    // Re-render list
+                    renderAbsensiList();
+                    renderLaporan();
+                    
+                    debugLog(`✅ Update completed successfully`, 'success');
+                    showAlert('success', `✅ Data absensi ${newNama} berhasil diperbarui!`);
+                } else {
+                    throw new Error(result.error || result.message || 'Gagal memperbarui data');
+                }
+                
+            } catch (error) {
+                debugLog(`❌ Update error: ${error.message}`, 'error');
+                showAlert('error', '❌ Gagal memperbarui data: ' + error.message);
+                
+                // Reset button state
+                const saveBtn = document.querySelector(`#absensi-row-${index} .btn-save`);
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '💾';
+                }
+            }
+        }
+
+        // Cancel edit absensi
+        function cancelEditAbsensi(index) {
+            debugLog(`❌ Edit cancelled for absensi index ${index}`, 'info');
+            // Simply re-render the list to restore original state
+            renderAbsensiList();
+            showAlert('info', 'Edit dibatalkan');
+        }
+
+        // Delete absensi functionality
+        function deleteAbsensi(index, tanggal, ekstra, kelas, nama) {
+            debugLog(`🗑️ Delete absensi initiated - Index: ${index}`, 'info');
+            
+            const row = document.getElementById(`absensi-row-${index}`);
+            
+            if (!row) {
+                debugLog(`❌ Delete failed - row not found for index ${index}`, 'error');
+                showAlert('error', 'Data absensi tidak ditemukan');
+                return;
+            }
+            
+            const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
+            
+            // Show inline confirmation
+            row.innerHTML = `
+                <td colspan="7">
+                    <div class="confirm-delete">
+                        <p>⚠️ Yakin ingin menghapus absensi <strong>${nama}</strong> dari kelas <strong>${kelas}</strong> pada tanggal <strong>${formattedDate}</strong>?</p>
+                        <button class="btn btn-sm btn-delete" onclick="confirmDeleteAbsensi(${index}, '${tanggal}', '${ekstra}', '${kelas}', '${nama}')">
+                            🗑️ Ya, Hapus
+                        </button>
+                        <button class="btn btn-sm btn-cancel" onclick="cancelEditAbsensi(${index})" style="margin-left: 10px;">
+                            ❌ Batal
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            debugLog(`✅ Delete confirmation shown for ${nama}`, 'info');
+        }
+
+        // Confirm delete absensi
+        async function confirmDeleteAbsensi(index, tanggal, ekstra, kelas, nama) {
+            try {
+                debugLog(`=== DELETE ABSENSI CONFIRMATION START ===`, 'info');
+                debugLog(`Index: ${index}`, 'info');
+                debugLog(`Data to delete: ${JSON.stringify({tanggal, ekstra, kelas, nama})}`, 'info');
+                
+                // PERBAIKAN: Normalize tanggal format untuk delete
+                const normalizeDate = (dateStr) => {
+                    if (!dateStr) return '';
+                    // Convert to YYYY-MM-DD format
+                    const date = new Date(dateStr);
+                    return date.toISOString().split('T')[0];
+                };
+                
+                const normalizedTanggal = normalizeDate(tanggal);
+                debugLog(`📅 Normalized date for delete: ${tanggal} → ${normalizedTanggal}`, 'info');
+                
+                showAlert('info', `🔄 Sedang menghapus absensi ${nama}...`);
+                
+                const deleteParams = {
+                    tanggal: normalizedTanggal,  // Format YYYY-MM-DD
+                    ekstra: ekstra,
+                    kelas: kelas,
+                    nama: nama
+                };
+                
+                debugLog(`📋 Delete params: ${JSON.stringify(deleteParams)}`, 'info');
+                
+                const result = await addToSheet('deleteAbsensi', deleteParams);
+                
+                debugLog(`📥 Delete result from server: ${JSON.stringify(result)}`, 'info');
+                debugLog(`=== DELETE ABSENSI CONFIRMATION END ===`, 'info');
+                
+                if (result && result.success) {
+                    // Remove from local data
+                    currentData.absensi.splice(index, 1);
+                    
+                    // Update dashboard stats
+                    updateDashboardStats();
+                    
+                    // Re-render list
+                    renderAbsensiList();
+                    renderLaporan();
+                    
+                    debugLog(`✅ Delete completed successfully for ${nama}`, 'success');
+                    showAlert('success', `✅ Absensi ${nama} berhasil dihapus!`);
+                } else {
+                    const errorMsg = result?.error || result?.message || 'Gagal menghapus data - response tidak valid';
+                    debugLog(`❌ Delete failed with result: ${JSON.stringify(result)}`, 'error');
+                    throw new Error(errorMsg);
+                }
+                
+            } catch (error) {
+                debugLog(`=== DELETE ABSENSI ERROR ===`, 'error');
+                debugLog(`Error: ${error.message}`, 'error');
+                
+                showAlert('error', `❌ Gagal menghapus absensi: ${error.message}`);
+                
+                // Restore original row
+                renderAbsensiList();
+            }
+        }
+
+        // Show alert
+        function showAlert(type, message) {
+            const alertHTML = `
+                <div class="alert alert-${type}" style="position: fixed; top: 80px; right: 20px; z-index: 1000; min-width: 300px; max-width: 400px; word-wrap: break-word;">
+                    ${message}
+                </div>
+            `;
+            
+            const alertEl = document.createElement('div');
+            alertEl.innerHTML = alertHTML;
+            document.body.appendChild(alertEl);
+            
+            setTimeout(() => {
+                alertEl.remove();
+            }, 8000);
+        }
+
+        // Edit anggota functionality
+        function editAnggota(index, originalNama, originalKelas, originalEkstra) {
+            debugLog(`✏️ Edit anggota started - Index: ${index}, Data: ${JSON.stringify({originalNama, originalKelas, originalEkstra})}`, 'info');
+            
+            const anggota = currentData.anggota[index];
+            const row = document.getElementById(`anggota-row-${index}`);
+            
+            if (!anggota || !row) {
+                debugLog(`❌ Edit failed - anggota or row not found`, 'error');
+                showAlert('error', 'Data anggota tidak ditemukan');
+                return;
+            }
+            
+            // Get unique classes and ekstrakurikuler for dropdowns
+            const uniqueKelas = [...new Set(currentData.anggota.map(a => a.kelas))].sort();
+            const uniqueEkstra = [...new Set(currentData.anggota.map(a => a.ekstra))].sort();
+            
+            // Replace table cells with input fields
+            row.innerHTML = `
+                <td>${row.querySelector('td').textContent}</td>
+                <td>
+                    <input type="text" class="edit-input" id="edit-nama-${index}" value="${anggota.nama}" required>
+                </td>
+                <td>
+                    <select class="edit-select" id="edit-kelas-${index}" required>
+                        ${uniqueKelas.map(kelas => 
+                            `<option value="${kelas}" ${kelas === anggota.kelas ? 'selected' : ''}>${kelas}</option>`
+                        ).join('')}
+                        <option value="custom">+ Kelas Baru</option>
+                    </select>
+                    <input type="text" class="edit-input" id="edit-kelas-custom-${index}" placeholder="Tulis kelas baru..." style="margin-top: 4px; display: none;">
+                </td>
+                <td>
+                    <select class="edit-select" id="edit-ekstra-${index}" required>
+                        ${uniqueEkstra.map(ekstra => 
+                            `<option value="${ekstra}" ${ekstra === anggota.ekstra ? 'selected' : ''}>${ekstra}</option>`
+                        ).join('')}
+                        <option value="custom">+ Ekstrakurikuler Baru</option>
+                    </select>
+                    <input type="text" class="edit-input" id="edit-ekstra-custom-${index}" placeholder="Tulis ekstrakurikuler baru..." style="margin-top: 4px; display: none;">
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-save" onclick="saveAnggota(${index}, '${originalNama}', '${originalKelas}', '${originalEkstra}')" title="Simpan Perubahan">
+                        💾
+                    </button>
+                    <button class="btn btn-sm btn-cancel" onclick="cancelEditAnggota(${index})" title="Batal Edit">
+                        ❌
+                    </button>
+                </td>
+            `;
+            
+            // Setup dropdown handlers for edit mode
+            const kelasSelect = document.getElementById(`edit-kelas-${index}`);
+            const kelasCustom = document.getElementById(`edit-kelas-custom-${index}`);
+            const ekstraSelect = document.getElementById(`edit-ekstra-${index}`);
+            const ekstraCustom = document.getElementById(`edit-ekstra-custom-${index}`);
+            
+            kelasSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    kelasCustom.style.display = 'block';
+                    kelasCustom.required = true;
+                } else {
+                    kelasCustom.style.display = 'none';
+                    kelasCustom.required = false;
+                }
+            });
+            
+            ekstraSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    ekstraCustom.style.display = 'block';
+                    ekstraCustom.required = true;
+                } else {
+                    ekstraCustom.style.display = 'none';
+                    ekstraCustom.required = false;
+                }
+            });
+            
+            // Focus on nama input
+            document.getElementById(`edit-nama-${index}`).focus();
+            
+            debugLog(`✅ Edit mode activated for anggota ${originalNama}`, 'success');
+        }
+        
+        // Save edited anggota
+        async function saveAnggota(index, originalNama, originalKelas, originalEkstra) {
+            debugLog(`💾 Save anggota started - Index: ${index}, Original: ${JSON.stringify({originalNama, originalKelas, originalEkstra})}`, 'info');
+            
+            const anggota = currentData.anggota[index];
+            
+            if (!anggota) {
+                debugLog(`❌ Save failed - anggota not found at index ${index}`, 'error');
+                showAlert('error', 'Data anggota tidak ditemukan');
+                return;
+            }
+            
+            // Get new values - use original values as fallback
+            let newNama = document.getElementById(`edit-nama-${index}`).value.trim();
+            if (!newNama) newNama = anggota.nama; // Keep original if empty
+            
+            const kelasSelect = document.getElementById(`edit-kelas-${index}`);
+            const kelasCustom = document.getElementById(`edit-kelas-custom-${index}`);
+            let newKelas;
+            if (kelasSelect.value === 'custom') {
+                newKelas = kelasCustom.value.trim();
+                if (!newKelas) newKelas = anggota.kelas; // Keep original if custom is empty
+            } else {
+                newKelas = kelasSelect.value || anggota.kelas; // Keep original if not selected
+            }
+            
+            const ekstraSelect = document.getElementById(`edit-ekstra-${index}`);
+            const ekstraCustom = document.getElementById(`edit-ekstra-custom-${index}`);
+            let newEkstra;
+            if (ekstraSelect.value === 'custom') {
+                newEkstra = ekstraCustom.value.trim();
+                if (!newEkstra) newEkstra = anggota.ekstra; // Keep original if custom is empty
+            } else {
+                newEkstra = ekstraSelect.value || anggota.ekstra; // Keep original if not selected
+            }
+            
+            debugLog(`📝 New values: ${JSON.stringify({newNama, newKelas, newEkstra})}`, 'info');
+            
+            // Final validation - ensure we have values (either new or original)
+            if (!newNama || !newKelas || !newEkstra) {
+                debugLog(`❌ Validation failed - missing values`, 'error');
+                showAlert('error', 'Terjadi kesalahan: Data tidak lengkap. Silakan coba lagi.');
+                return;
+            }
+            
+            // Check if data actually changed
+            if (newNama === anggota.nama && newKelas === anggota.kelas && newEkstra === anggota.ekstra) {
+                debugLog(`ℹ️ No changes detected`, 'info');
+                showAlert('info', 'Tidak ada perubahan data');
+                cancelEditAnggota(index);
+                return;
+            }
+            
+            try {
+                // Show loading state
+                const saveBtn = document.querySelector(`#anggota-row-${index} .btn-save`);
+                const originalText = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '⏳';
+                
+                showAlert('info', `🔄 Sedang menyimpan perubahan untuk ${newNama}...`);
+                
+                debugLog(`📤 Sending update request to server...`, 'info');
+                
+                // Update via Google Sheets using original data to identify the record
+                const result = await addToSheet('updateAnggota', {
+                    originalNama: originalNama,
+                    originalKelas: originalKelas,
+                    originalEkstra: originalEkstra,
+                    newNama: newNama,
+                    newKelas: newKelas,
+                    newEkstra: newEkstra
+                });
+                
+                debugLog(`📥 Update result: ${JSON.stringify(result)}`, 'info');
+                
+                if (result.success) {
+                    // Update local data
+                    currentData.anggota[index] = {
+                        ...anggota,
+                        nama: newNama,
+                        kelas: newKelas,
+                        ekstra: newEkstra
+                    };
+                    
+                    // Update dashboard stats
+                    updateDashboardStats();
+                    
+                    // Update dropdowns
+                    populateDropdowns();
+                    
+                    // Re-render list
+                    renderAnggotaList();
+                    renderLaporan();
+                    
+                    debugLog(`✅ Update completed successfully`, 'success');
+                    showAlert('success', `✅ Data ${newNama} berhasil diperbarui!`);
+                } else {
+                    throw new Error(result.error || result.message || 'Gagal memperbarui data');
+                }
+                
+            } catch (error) {
+                debugLog(`❌ Update error: ${error.message}`, 'error');
+                showAlert('error', '❌ Gagal memperbarui data: ' + error.message);
+                
+                // Reset button state
+                const saveBtn = document.querySelector(`#anggota-row-${index} .btn-save`);
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '💾';
+                }
+            }
+        }
+        
+        // Cancel edit anggota
+        function cancelEditAnggota(index) {
+            debugLog(`❌ Edit cancelled for index ${index}`, 'info');
+            // Simply re-render the list to restore original state
+            renderAnggotaList();
+            showAlert('info', 'Edit dibatalkan');
+        }
+
+        function deleteAnggota(index, nama, kelas, ekstra) {
+            debugLog(`🗑️ Delete anggota initiated - Index: ${index}, Data: ${JSON.stringify({nama, kelas, ekstra})}`, 'info');
+            
+            const row = document.getElementById(`anggota-row-${index}`);
+            
+            if (!row) {
+                debugLog(`❌ Delete failed - row not found for index ${index}`, 'error');
+                showAlert('error', 'Data anggota tidak ditemukan');
+                return;
+            }
+            
+            // Show inline confirmation
+            row.innerHTML = `
+                <td colspan="5">
+                    <div class="confirm-delete">
+                        <p>⚠️ Yakin ingin menghapus anggota <strong>${nama}</strong> dari kelas <strong>${kelas}</strong> ekstrakurikuler <strong>${ekstra}</strong>?</p>
+                        <button class="btn btn-sm btn-delete" onclick="confirmDeleteAnggota(${index}, '${nama}', '${kelas}', '${ekstra}')">
+                            🗑️ Ya, Hapus
+                        </button>
+                        <button class="btn btn-sm btn-cancel" onclick="cancelEditAnggota(${index})" style="margin-left: 10px;">
+                            ❌ Batal
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            debugLog(`✅ Delete confirmation shown for ${nama}`, 'info');
+        }
+        
+        // Confirm delete anggota
+        async function confirmDeleteAnggota(index, nama, kelas, ekstra) {
+            try {
+                debugLog(`=== DELETE CONFIRMATION START ===`, 'info');
+                debugLog(`Index: ${index}`, 'info');
+                debugLog(`Data to delete: ${JSON.stringify({nama, kelas, ekstra})}`, 'info');
+                debugLog(`Current anggota data length: ${currentData.anggota.length}`, 'info');
+                debugLog(`Target anggota: ${JSON.stringify(currentData.anggota[index])}`, 'info');
+                debugLog(`Apps Script URL: ${APPS_SCRIPT_URL}`, 'info');
+                
+                showAlert('info', `🔄 Sedang menghapus ${nama}...`);
+                
+                // DEBUGGING: Test koneksi dulu
+                debugLog(`🔗 Testing connection before delete...`, 'info');
+                const testResult = await makeJSONPRequest('test');
+                debugLog(`🔗 Connection test result: ${JSON.stringify(testResult)}`, 'info');
+                
+                if (!testResult || !testResult.success) {
+                    throw new Error('Koneksi ke Google Apps Script gagal');
+                }
+                
+                // DEBUGGING: Coba delete dengan parameter yang jelas
+                debugLog(`📤 Sending delete request with params: ${JSON.stringify({
+                    action: 'deleteAnggota',
+                    nama: nama,
+                    kelas: kelas,
+                    ekstra: ekstra
+                })}`, 'info');
+                
+                const result = await addToSheet('deleteAnggota', {
+                    nama: nama,
+                    kelas: kelas,
+                    ekstra: ekstra
+                });
+                
+                debugLog(`📥 Delete result from server: ${JSON.stringify(result)}`, 'info');
+                debugLog(`=== DELETE CONFIRMATION END ===`, 'info');
+                
+                if (result && result.success) {
+                    // Remove from local data
+                    currentData.anggota.splice(index, 1);
+                    
+                    // Update dashboard stats
+                    updateDashboardStats();
+                    
+                    // Update dropdowns
+                    populateDropdowns();
+                    
+                    // Re-render list
+                    renderAnggotaList();
+                    renderLaporan();
+                    
+                    debugLog(`✅ Delete completed successfully for ${nama}`, 'success');
+                    showAlert('success', `✅ Anggota ${nama} berhasil dihapus!`);
+                } else {
+                    const errorMsg = result?.error || result?.message || 'Gagal menghapus data - response tidak valid';
+                    debugLog(`❌ Delete failed with result: ${JSON.stringify(result)}`, 'error');
+                    throw new Error(errorMsg);
+                }
+                
+            } catch (error) {
+                debugLog(`=== DELETE ERROR ===`, 'error');
+                debugLog(`Error object: ${JSON.stringify(error)}`, 'error');
+                debugLog(`Error message: ${error.message}`, 'error');
+                debugLog(`Error stack: ${error.stack}`, 'error');
+                
+                showAlert('error', `❌ Gagal menghapus anggota: ${error.message}`);
+                
+                // Restore original row
+                renderAnggotaList();
+            }
+        }
+
+        // Element SDK Configuration
+        const defaultConfig = {
+            app_title: "Sistem Manajemen Ekstrakurikuler",
+            app_subtitle: "Platform terpadu untuk mengelola data anggota, absensi, dan penilaian ekstrakurikuler",
+            primary_color: "#667eea",
+            secondary_color: "#764ba2",
+            success_color: "#10b981",
+            warning_color: "#f59e0b",
+            danger_color: "#ef4444"
+        };
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange: async (config) => {
+                    // Update title and subtitle
+                    document.getElementById('appTitle').textContent = config.app_title || defaultConfig.app_title;
+                    document.getElementById('appSubtitle').textContent = config.app_subtitle || defaultConfig.app_subtitle;
+                    
+                    // Update colors
+                    const primaryColor = config.primary_color || defaultConfig.primary_color;
+                    const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+                    
+                    // Apply color changes to CSS custom properties
+                    document.documentElement.style.setProperty('--primary-color', primaryColor);
+                    document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+                },
+                mapToCapabilities: (config) => ({
+                    recolorables: [
+                        {
+                            get: () => config.primary_color || defaultConfig.primary_color,
+                            set: (value) => {
+                                config.primary_color = value;
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.secondary_color || defaultConfig.secondary_color,
+                            set: (value) => {
+                                config.secondary_color = value;
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    ],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["app_title", config.app_title || defaultConfig.app_title],
+                    ["app_subtitle", config.app_subtitle || defaultConfig.app_subtitle]
+                ])
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a242ea61221fd1f',t:'MTc2Mzc3MDAwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
